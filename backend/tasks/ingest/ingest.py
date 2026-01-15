@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 
 from backend.tasks.ingest.repo_clone.clone_repo import clone_repo
-from backend.tasks.ingest.embedding.embedding_blind import embed_file
+from backend.tasks.ingest.embedding.dispatcher import embed_file
 from backend.tasks.ingest.vector_store.mongo_store import insert_chunks
 from backend.infra.db import clear_collection
 
@@ -15,7 +15,6 @@ def ingest(repo_url: str) -> None:
     clear_collection()
 
     repo_path: Path | None = None
-    all_chunks = []
 
     try:
         repo_path = clone_repo(repo_url)
@@ -31,11 +30,15 @@ def ingest(repo_url: str) -> None:
                 continue
 
             chunks = embed_file(file_path)
-            if chunks:
-                insert_chunks(chunks)
+            if not chunks:
+                continue
 
+            relative_path = file_path.relative_to(repo_path)
 
-        insert_chunks(all_chunks)
+            for chunk in chunks:
+                chunk["file_path"] = str(relative_path)
+
+            insert_chunks(chunks)
 
     finally:
         if repo_path and repo_path.exists():
