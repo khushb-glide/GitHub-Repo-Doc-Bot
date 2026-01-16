@@ -3,7 +3,6 @@ from pathlib import Path
 import uuid
 
 def clone_repo(repo_url: str) -> Path:
-    print("Hello")
     base_tmp_dir = Path(__file__).resolve().parents[1] / "tmp"
     base_tmp_dir.mkdir(parents=True, exist_ok=True)
 
