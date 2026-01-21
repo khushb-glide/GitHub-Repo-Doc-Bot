@@ -18,11 +18,12 @@ def retrieve(query_embedding: List[float], top_k: int = 3) -> List[Dict]:
 
     scored = []
 
-    for doc in collection.find({}, {"content": 1, "embedding": 1, "file_path": 1}):
+    for doc in collection.find({}, {"content": 1, "embedding": 1, "file_path": 1, "chunk_index": 1}):
         score = _cosine_similarity(query_embedding, doc["embedding"])
         scored.append({
             "content": doc["content"],
             "file_path": doc["file_path"],
+            "chunk_index": doc["chunk_index"],
             "score": score
         })
 
