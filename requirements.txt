@@ -7,3 +7,4 @@ python-dotenv
 groq
 pytest
 bs4
+pytest-cov
